@@ -200,8 +200,14 @@ Password:  admin2024
 - [x] CI/CD GitHub Actions
 - [ ] Supabase Auth (tutti i client)
 - [ ] Stripe checkout live
-- [ ] Push notifications production (APNS + FCM)
-- [ ] Biometria (FaceID / Fingerprint)
+- [x] Push notifications helper (scheduling 30/7/0gg + digest settimanale)
+- [x] Biometria (FaceID / Fingerprint via expo-local-authentication)
+- [x] Offline storage (MMKV + AsyncStorage)
+- [x] Schermata dettaglio scadenza
+- [x] Admin mobile (login + dashboard + utenti)
+- [x] Modal pricing + profilo/impostazioni
+- [x] packages/ui (design tokens + presentation helpers)
+- [ ] Push notifications production server (APNS + FCM)
 - [ ] Widgets iOS + Android
 - [ ] App Store + Play Store submission
 

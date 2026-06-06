@@ -102,17 +102,27 @@ export default function DashboardScreen() {
               {criticalItems.length} scadenze urgenti oggi
             </Text>
           </View>
-          <TouchableOpacity
-            className="w-11 h-11 bg-white rounded-xl items-center justify-center"
-            style={{ shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}
-            onPress={() => setNotifOpen(!notifOpen)}
-            accessibilityLabel="Apri notifiche"
-          >
-            <Bell size={20} color={COLORS.muted} />
-            {criticalItems.length > 0 && (
-              <View className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500" />
-            )}
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-2">
+            <TouchableOpacity
+              className="w-11 h-11 bg-white rounded-xl items-center justify-center"
+              style={{ shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}
+              onPress={() => setNotifOpen(!notifOpen)}
+              accessibilityLabel="Apri notifiche"
+            >
+              <Bell size={20} color={COLORS.muted} />
+              {criticalItems.length > 0 && (
+                <View className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/profilo')}
+              className="w-11 h-11 rounded-xl items-center justify-center"
+              style={{ backgroundColor: COLORS.primary }}
+              accessibilityLabel="Apri profilo"
+            >
+              <Text style={{ fontFamily: 'DMSans_800ExtraBold', fontSize: 14, color: '#fff' }}>EL</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* KPI Grid */}

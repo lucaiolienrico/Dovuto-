@@ -41,6 +41,7 @@ export default function RootLayout() {
         <Stack.Screen name="deadline/[id]" options={{ presentation: 'card' }} />
         <Stack.Screen name="modal/nuova-scadenza" options={{ presentation: 'modal' }} />
         <Stack.Screen name="modal/pricing" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="profilo" options={{ presentation: 'card' }} />
         <Stack.Screen name="admin" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
