@@ -1,6 +1,7 @@
-import { Tabs } from 'expo-router'
+import { Tabs, router } from 'expo-router'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Activity, Clock, Calendar, Bell, Plus } from 'lucide-react-native'
+import * as Haptics from 'expo-haptics'
 import { COLORS } from '@dovuto/data'
 import { useDashboard } from '@dovuto/hooks'
 
@@ -12,10 +13,10 @@ function TabIcon({ icon: Icon, focused, color }: { icon: any; focused: boolean; 
   )
 }
 
-function CenterButton({ onPress }: { onPress: () => void }) {
+function CenterButton() {
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); router.push('/modal/nuova-scadenza') }}
       className="w-14 h-14 bg-indigo-600 rounded-2xl items-center justify-center -mt-6"
       style={{ shadowColor: '#4f46e5', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 12, elevation: 8 }}
       accessibilityLabel="Aggiungi nuova scadenza"
@@ -72,9 +73,7 @@ export default function TabLayout() {
         options={{
           title: '',
           tabBarIcon: () => null,
-          tabBarButton: (props) => (
-            <CenterButton onPress={() => props.onPress?.()} />
-          ),
+          tabBarButton: () => <CenterButton />,
         }}
       />
       <Tabs.Screen
