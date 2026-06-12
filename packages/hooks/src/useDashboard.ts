@@ -26,29 +26,30 @@ export interface DashboardState {
   }
 }
 
-export function useDashboard(): DashboardState {
+export function useDashboard(source?: Deadline[]): DashboardState {
+  const data = source ?? DEADLINES
   const [activeCategory, setActiveCategory] = useState('all')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
 
   const criticalItems = useMemo(() =>
-    sortByPriority(DEADLINES.filter(isUrgent)).slice(0, 5),
-  [])
+    sortByPriority(data.filter(isUrgent)).slice(0, 5),
+  [data])
 
   const filteredDeadlines = useMemo(() =>
-    filterByCategory(DEADLINES, activeCategory),
-  [activeCategory])
+    filterByCategory(data, activeCategory),
+  [activeCategory, data])
 
   const kpis = useMemo(() => {
-    const next7    = DEADLINES.filter(d => { const days = getDaysLeft(d.date); return days >= 0 && days <= 7 }).length
-    const next30   = DEADLINES.filter(d => { const days = getDaysLeft(d.date); return days >= 0 && days <= 30 }).length
+    const next7    = data.filter(d => { const days = getDaysLeft(d.date); return days >= 0 && days <= 7 }).length
+    const next30   = data.filter(d => { const days = getDaysLeft(d.date); return days >= 0 && days <= 30 }).length
     const totalMonth = MONTHLY_DATA[5].amount
     const totalYear  = MONTHLY_DATA.reduce((s, m) => s + m.amount, 0)
-    const docScad    = DEADLINES.filter(d => ['critico', 'scade_oggi'].includes(d.status)).length
-    const autoRenew  = DEADLINES.filter(d => ['digitale', 'abbonamenti'].includes(d.category)).length
+    const docScad    = data.filter(d => ['critico', 'scade_oggi'].includes(d.status)).length
+    const autoRenew  = data.filter(d => ['digitale', 'abbonamenti'].includes(d.category)).length
     return { next7, next30, totalMonth, totalYear, docScad, autoRenew }
-  }, [])
+  }, [data])
 
   return {
     activeCategory, setActiveCategory,

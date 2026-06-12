@@ -4,7 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { X, Save, ChevronDown } from 'lucide-react-native'
 import * as Haptics from 'expo-haptics'
 import { router } from 'expo-router'
-import { CATEGORIES, COLORS } from '@dovuto/data'
+import { CATEGORIES, COLORS, validateDeadline } from '@dovuto/data'
+import { deadlines as deadlinesApi } from '@dovuto/api'
+import { useAuth } from '../../lib/AuthContext'
+import { scheduleDeadlineAlerts } from '../../lib/notifications'
 
 const STATUSES = [
   { id: 'programmato', label: 'Programmato' },
@@ -14,16 +17,69 @@ const STATUSES = [
 ]
 
 export default function NuovaScadenzaModal() {
+  const { user } = useAuth()
   const [title, setTitle]       = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [category, setCategory] = useState('finanza')
   const [date, setDate]         = useState('')
   const [amount, setAmount]     = useState('')
   const [status, setStatus]     = useState('programmato')
+  const [error, setError]       = useState('')
+  const [saving, setSaving]     = useState(false)
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setError('')
+    const amountNum = amount ? parseFloat(amount) : 0
+
+    // Validazione condivisa
+    const errors = validateDeadline({
+      title, date, amount: amountNum,
+      category: category as any, status: status as any, priority: 3,
+    })
+    if (errors.length > 0) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+      setError(errors[0].message)
+      return
+    }
+
+    // Senza login: solo demo, chiude
+    if (!user) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      router.back()
+      return
+    }
+
+    // Con login: crea su Supabase + programma le notifiche
+    setSaving(true)
+    const created = await deadlinesApi.create({
+      user_id: user.id,
+      title: title.trim(),
+      subtitle: subtitle.trim(),
+      category,
+      due_date: date,
+      amount: amountNum,
+      status: status as any,
+      priority: 3,
+      notify: true,
+    })
+    setSaving(false)
+
+    if (!created) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+      setError('Errore durante il salvataggio')
+      return
+    }
+
+    // Programma gli alert locali (30/7/0 giorni)
+    try {
+      await scheduleDeadlineAlerts({
+        id: 0, title: created.title, subtitle: created.subtitle,
+        category: created.category as any, date: created.due_date,
+        amount: created.amount, status: created.status as any, priority: created.priority,
+      })
+    } catch { /* notifiche best-effort */ }
+
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    // In production: call useDeadlines().add(...)
     router.back()
   }
 
@@ -133,14 +189,17 @@ export default function NuovaScadenzaModal() {
 
         {/* Save button */}
         <View style={styles.footer}>
+          {error ? (
+            <Text style={styles.errorText}>{error}</Text>
+          ) : null}
           <TouchableOpacity
             onPress={handleSave}
-            disabled={!title || !date}
-            style={[styles.saveBtn, (!title || !date) && styles.saveBtnDisabled]}
+            disabled={!title || !date || saving}
+            style={[styles.saveBtn, (!title || !date || saving) && styles.saveBtnDisabled]}
             accessibilityLabel="Salva scadenza"
           >
             <Save size={18} color="#fff" />
-            <Text style={styles.saveBtnText}>Crea Scadenza</Text>
+            <Text style={styles.saveBtnText}>{saving ? 'Salvataggio…' : 'Crea Scadenza'}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -164,6 +223,7 @@ const styles = StyleSheet.create({
   statusText: { fontFamily: 'DMSans_600SemiBold', fontSize: 11, color: '#64748b' },
   statusTextActive: { color: '#fff' },
   footer: { padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e2e8f0' },
+  errorText: { fontFamily: 'DMSans_500Medium', fontSize: 12, color: '#f43f5e', marginBottom: 8, textAlign: 'center' },
   saveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: '#4f46e5', borderRadius: 14, paddingVertical: 16 },
   saveBtnDisabled: { opacity: 0.4 },
   saveBtnText: { fontFamily: 'DMSans_700Bold', fontSize: 15, color: '#fff' },

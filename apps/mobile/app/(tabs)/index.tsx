@@ -3,7 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Bell, AlertTriangle, Clock, DollarSign, BarChart2, FileText, RefreshCw, ArrowUpRight, ChevronRight } from 'lucide-react-native'
 import * as Haptics from 'expo-haptics'
 import { router } from 'expo-router'
-import { useDashboard } from '@dovuto/hooks'
+import { useDashboard, useUserDeadlines } from '@dovuto/hooks'
+import { useAuth } from '../../lib/AuthContext'
 import {
   CATEGORIES, STATUS_CONFIG, CAT_COLORS,
   formatCurrency, formatDate, getDaysLeft,
@@ -79,7 +80,9 @@ function PriorityCard({ item, index }: { item: any; index: number }) {
 }
 
 export default function DashboardScreen() {
-  const { criticalItems, kpis, notifOpen, setNotifOpen } = useDashboard()
+  const { user } = useAuth()
+  const { deadlines } = useUserDeadlines(user?.id ?? null)
+  const { criticalItems, kpis, notifOpen, setNotifOpen } = useDashboard(deadlines)
 
   const kpiList = [
     { label: 'Scadenze 7gg',  value: kpis.next7,                                     icon: AlertTriangle, trend: +2,  color: COLORS.danger   },

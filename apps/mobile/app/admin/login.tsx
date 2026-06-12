@@ -5,6 +5,7 @@ import { router } from 'expo-router'
 import { Sparkles, Lock, Mail, Eye, EyeOff, AlertCircle, Shield, ChevronLeft } from 'lucide-react-native'
 import * as Haptics from 'expo-haptics'
 import { ADMIN_CREDENTIALS } from '@dovuto/data'
+import { auth as authApi, profiles } from '@dovuto/api'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -16,15 +17,37 @@ export default function AdminLogin() {
   const handleLogin = async () => {
     setError('')
     setLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    setLoading(false)
 
+    // Percorso demo (offline): credenziali statiche
     if (email.trim() === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+      await new Promise(r => setTimeout(r, 400))
+      setLoading(false)
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       router.replace('/admin/dashboard')
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
-      setError('Credenziali non valide')
+      return
+    }
+
+    // Percorso reale: Supabase auth + verifica is_admin
+    try {
+      const { data, error: signErr } = await authApi.signIn(email.trim(), password)
+      if (signErr || !data?.user) {
+        setLoading(false)
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        setError('Credenziali non valide')
+        return
+      }
+      const profile = await profiles.get(data.user.id)
+      setLoading(false)
+      if (profile?.is_admin) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        router.replace('/admin/dashboard')
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        setError('Accesso riservato agli amministratori')
+      }
+    } catch {
+      setLoading(false)
+      setError('Errore di connessione')
     }
   }
 

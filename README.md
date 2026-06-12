@@ -205,7 +205,7 @@ Password:  admin2024
 - [x] **Validazione condivisa** (deadline, email, password)
 - [x] **Test unitari** (24 test Vitest, validation + utils)
 - [x] **Cablaggio UI web sui dati reali** (Dashboard via useUserDeadlines, checkout Stripe live, AuthProvider)
-- [ ] Auth + CRUD reali su mobile (riuso packages/api con AsyncStorage adapter)
+- [x] **Auth + CRUD reali su mobile** (AuthProvider + useUserDeadlines + create via API + admin Supabase)
 - [x] Push notifications helper (scheduling 30/7/0gg + digest settimanale)
 - [x] Biometria (FaceID / Fingerprint via expo-local-authentication)
 - [x] Offline storage (MMKV + AsyncStorage)

@@ -11,11 +11,13 @@ import { COLORS } from '@dovuto/data'
 import {
   getBiometricType, biometricLabel, isBiometricsEnabled,
   enableBiometrics, disableBiometrics, type BiometricType,
-} from '../../lib/biometrics'
-import { Prefs, PREF_KEYS } from '../../lib/storage'
-import { requestNotificationPermissions, cancelAll } from '../../lib/notifications'
+} from '../lib/biometrics'
+import { Prefs, PREF_KEYS } from '../lib/storage'
+import { requestNotificationPermissions, cancelAll } from '../lib/notifications'
+import { useAuth } from '../lib/AuthContext'
 
 export default function ProfiloScreen() {
+  const { user, profile, plan, signOut } = useAuth()
   const [bioType, setBioType] = useState<BiometricType>('none')
   const [bioEnabled, setBioEnabled] = useState(false)
   const [notifEnabled, setNotifEnabled] = useState(true)
@@ -63,7 +65,7 @@ export default function ProfiloScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     Alert.alert('Esci', 'Vuoi disconnetterti da Dovuto?', [
       { text: 'Annulla', style: 'cancel' },
-      { text: 'Esci', style: 'destructive', onPress: () => router.replace('/') },
+      { text: 'Esci', style: 'destructive', onPress: async () => { await signOut(); router.replace('/') } },
     ])
   }
 

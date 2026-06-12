@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, DMSans_800ExtraBold } from '@expo-google-fonts/dm-sans'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Notifications from 'expo-notifications'
+import { AuthProvider } from '../lib/AuthContext'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -34,16 +35,18 @@ export default function RootLayout() {
   if (!fontsLoaded) return null
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="deadline/[id]" options={{ presentation: 'card' }} />
-        <Stack.Screen name="modal/nuova-scadenza" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="modal/pricing" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="profilo" options={{ presentation: 'card' }} />
-        <Stack.Screen name="admin" options={{ headerShown: false }} />
-      </Stack>
-    </GestureHandlerRootView>
+    <AuthProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="deadline/[id]" options={{ presentation: 'card' }} />
+          <Stack.Screen name="modal/nuova-scadenza" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="modal/pricing" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="profilo" options={{ presentation: 'card' }} />
+          <Stack.Screen name="admin" options={{ headerShown: false }} />
+        </Stack>
+      </GestureHandlerRootView>
+    </AuthProvider>
   )
 }
