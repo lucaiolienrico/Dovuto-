@@ -1,9 +1,28 @@
 import { Check, X } from 'lucide-react'
+import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { startCheckout } from '../lib/checkout'
 
 export default function PricingCard({ plan, annual, compact = false }) {
   const isPopular = plan.id === 'personal'
   const price     = annual ? plan.annual : plan.price
   const period    = annual ? '/anno' : '/mese'
+
+  const { user } = useAuth()
+  const [busy, setBusy] = useState(false)
+  const [err, setErr]   = useState('')
+
+  const handleClick = async () => {
+    setErr('')
+    setBusy(true)
+    const res = await startCheckout({
+      planId: plan.id,
+      billing: annual ? 'annual' : 'monthly',
+      user,
+    })
+    setBusy(false)
+    if (!res.ok) setErr(res.error)
+  }
 
   const ctaBg = {
     primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200',
@@ -92,9 +111,14 @@ export default function PricingCard({ plan, annual, compact = false }) {
         ))}
       </ul>
 
-      <button className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 ${ctaBg[plan.ctaStyle]}`}>
-        {plan.cta}
+      <button
+        onClick={handleClick}
+        disabled={busy}
+        className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 disabled:opacity-60 ${ctaBg[plan.ctaStyle]}`}
+      >
+        {busy ? 'Attendere…' : plan.cta}
       </button>
+      {err && <p className="text-xs text-rose-600 mt-2 text-center">{err}</p>}
     </div>
   )
 }

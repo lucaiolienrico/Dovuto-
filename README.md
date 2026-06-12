@@ -204,7 +204,7 @@ Password:  admin2024
 - [x] **Stripe checkout + webhook** (serverless Vercel, sync abbonamenti)
 - [x] **Validazione condivisa** (deadline, email, password)
 - [x] **Test unitari** (24 test Vitest, validation + utils)
-- [ ] Cablaggio UI pagine web sui dati reali (sostituire mock con @dovuto/api)
+- [x] **Cablaggio UI web sui dati reali** (Dashboard via useUserDeadlines, checkout Stripe live, AuthProvider)
 - [ ] Auth + CRUD reali su mobile (riuso packages/api con AsyncStorage adapter)
 - [x] Push notifications helper (scheduling 30/7/0gg + digest settimanale)
 - [x] Biometria (FaceID / Fingerprint via expo-local-authentication)

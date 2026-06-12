@@ -8,7 +8,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@dovuto/data": "workspace:*"
+    "@dovuto/data": "workspace:*",
+    "@dovuto/api": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.3"

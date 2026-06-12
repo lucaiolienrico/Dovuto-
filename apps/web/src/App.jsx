@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 import { AdminAuthProvider } from './context/AdminAuthContext'
 import AdminGuard from './pages/admin/AdminGuard'
 
@@ -15,8 +16,9 @@ import { AdminRevenue, AdminLogs, AdminSettings } from './pages/admin/AdminExtra
 
 export default function App() {
   return (
-    <AdminAuthProvider>
-      <BrowserRouter>
+    <AuthProvider>
+      <AdminAuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public */}
           <Route path="/"          element={<Landing />}   />
@@ -39,5 +41,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AdminAuthProvider>
+    </AuthProvider>
   )
 }

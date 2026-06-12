@@ -10,9 +10,11 @@ import {
   Building2, Shield, Dog, GraduationCap, Music, PieChart, Check
 } from 'lucide-react'
 import {
-  CATEGORIES, DEADLINES, MONTHLY_DATA, STATUS_CONFIG, CAT_COLORS,
+  CATEGORIES, MONTHLY_DATA, STATUS_CONFIG, CAT_COLORS,
   formatCurrency, formatDate, getDaysLeft
 } from '../data/mockData'
+import { useAuth } from '../context/AuthContext'
+import { useUserDeadlines } from '@dovuto/hooks'
 import PricingModal from '../components/PricingModal'
 
 const ICON_MAP = { Home, Car, Heart, Users, Globe, Repeat, Wallet, TrendingUp, FileText, Mail, Key, Server, Plane, Building2, Shield, Dog, GraduationCap, Music }
@@ -132,19 +134,24 @@ export default function Dashboard() {
   const [notifOpen, setNotifOpen]               = useState(false)
   const [showPricing, setShowPricing]           = useState(false)
 
+  // Dati reali da Supabase se autenticato, altrimenti demo mock.
+  const { user } = useAuth()
+  const { deadlines: DEADLINES, loading, isDemo } = useUserDeadlines(user?.id ?? null)
+
   const criticalItems = useMemo(() =>
     DEADLINES.filter(d => ['critico','scade_oggi','in_scadenza'].includes(d.status))
-      .sort((a, b) => a.priority - b.priority).slice(0, 5), [])
+      .sort((a, b) => a.priority - b.priority).slice(0, 5), [DEADLINES])
 
   const filteredDeadlines = useMemo(() =>
     activeCategory === 'all' ? DEADLINES : DEADLINES.filter(d => d.category === activeCategory),
-  [activeCategory])
+  [activeCategory, DEADLINES])
 
   const totalMonth  = MONTHLY_DATA[5].amount
   const totalYear   = MONTHLY_DATA.reduce((s, m) => s + m.amount, 0)
   const next7       = DEADLINES.filter(d => getDaysLeft(d.date) <= 7  && getDaysLeft(d.date) >= 0).length
   const next30      = DEADLINES.filter(d => getDaysLeft(d.date) <= 30 && getDaysLeft(d.date) >= 0).length
   const autoRenewals = DEADLINES.filter(d => ['digitale','abbonamenti'].includes(d.category)).length
+
 
   const donutData = [
     { label: 'Tasse & Tributi', value: 707,  color: '#6366f1' },
@@ -301,9 +308,21 @@ export default function Dashboard() {
         {/* CONTENT */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <div className="max-w-7xl mx-auto">
+            {isDemo && (
+              <div className="mb-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-2.5 text-sm">
+                <Eye size={15} className="flex-shrink-0" />
+                <span>Stai vedendo dati dimostrativi. <Link to="/" className="font-semibold underline">Accedi</Link> per gestire le tue scadenze reali.</span>
+              </div>
+            )}
             <div className="mb-6">
-              <h1 className="text-xl font-bold text-slate-900">Buon pomeriggio, Enrico</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Domenica 16 Giugno 2024 — <span className="text-rose-600 font-medium">{next7} scadenze</span> entro 7 giorni</p>
+              <h1 className="text-xl font-bold text-slate-900">
+                {user?.user_metadata?.full_name ? `Ciao, ${user.user_metadata.full_name.split(' ')[0]}` : 'Buon pomeriggio'}
+              </h1>
+              <p className="text-sm text-slate-500 mt-0.5">
+                {loading
+                  ? 'Caricamento scadenze…'
+                  : <>Le tue scadenze — <span className="text-rose-600 font-medium">{next7} scadenze</span> entro 7 giorni</>}
+              </p>
             </div>
 
             {/* KPI */}
