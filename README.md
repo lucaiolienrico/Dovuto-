@@ -198,8 +198,14 @@ Password:  admin2024
 - [x] Tab navigator + schermate base
 - [x] Tauri desktop config
 - [x] CI/CD GitHub Actions
-- [ ] Supabase Auth (tutti i client)
-- [ ] Stripe checkout live
+- [x] **Supabase backend** (schema SQL + RLS + trigger auto-profilo)
+- [x] **packages/api** (client + query typed: auth, deadlines CRUD, subscriptions)
+- [x] **Web AuthContext** reale (Supabase auth + sessione)
+- [x] **Stripe checkout + webhook** (serverless Vercel, sync abbonamenti)
+- [x] **Validazione condivisa** (deadline, email, password)
+- [x] **Test unitari** (24 test Vitest, validation + utils)
+- [ ] Cablaggio UI pagine web sui dati reali (sostituire mock con @dovuto/api)
+- [ ] Auth + CRUD reali su mobile (riuso packages/api con AsyncStorage adapter)
 - [x] Push notifications helper (scheduling 30/7/0gg + digest settimanale)
 - [x] Biometria (FaceID / Fingerprint via expo-local-authentication)
 - [x] Offline storage (MMKV + AsyncStorage)

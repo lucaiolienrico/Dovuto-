@@ -13,7 +13,11 @@
     "lucide-react": "^0.383.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.23.1"
+    "react-router-dom": "^6.23.1",
+    "@supabase/supabase-js": "^2.45.0",
+    "stripe": "^16.2.0",
+    "@dovuto/api": "workspace:*",
+    "@dovuto/data": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
