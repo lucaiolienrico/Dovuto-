@@ -1,0 +1,17 @@
+node_modules
+<<<<<<< HEAD
+.turbo
+dist
+.expo
+src-tauri/target
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+*.orig
+=======
+dist
+.vercel
+>>>>>>> fc4cb66790bfe45d480ccd2783a40d98a969b81f
